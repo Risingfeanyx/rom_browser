@@ -1,7 +1,5 @@
 #menu to load multiple roms using whiptail
 #seperate functions to load via seperate emus
-
-
 #load nestopia roms
 installed_nes(){
 PS3="Enter Choice: "
@@ -38,6 +36,33 @@ select file ; do
    }
 done
 }
+function initialize()
+        {
+	sudo apt install visualboyadvance nestopia -y
+        {
+	rm -rf *nes* *gba*
+        if cat romlist
+        then
+        advancedMenu
+        else
+        clear
+        echo "romlist does not exist please add direct download links to file"
+	sleep 5
+	nano romlist
+	advancedMenu
+        fi
+        }
+        wget -i romlist
+        #sanitize
+        for file in *; do mv "$file" $(echo "$file" | tr ' ' '_') ; done
+        #unzip
+        for i in $(ls *.7z); do 7za e "$i" ; done
+        #clean
+        rm -rf *7z*
+        #resanitize
+        for file in *; do mv "$file" $(echo "$file" | tr ' ' '_') ; done
+	advancedMenu
+        }
 
 
 
@@ -49,16 +74,19 @@ function advancedMenu() {
     case $ADVSEL in
         1)
         clear
-        installed_nes ~/emulator_download/roms/nes/*
+        installed_nes $(ls *.nes)
         ;;
         2)
         clear
-        installed_gba ~/emulator_download/roms/gba/*
+        installed_gba $(ls *.gba)
         ;;
         3)
-            echo "Option 3"
-            whiptail --title "Option 1" --msgbox "You chose option 3. Exit status $?" 8 45
+        clear
+        initialize
+        echo "Roms Downloaded!"
+        advancedMenu
         ;;
+
     esac
 }
 advancedMenu
